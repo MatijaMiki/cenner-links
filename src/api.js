@@ -23,6 +23,17 @@ async function req(method, path, body) {
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
+export async function socialLogin(idToken) {
+  const res = await fetch(`${API_BASE}/portal/auth/google`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ idToken }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Social login failed');
+  return data;
+}
+
 export async function login(email, password) {
   const res = await fetch(`${API_BASE}/portal/auth/login`, {
     method: 'POST',
