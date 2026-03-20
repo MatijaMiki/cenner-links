@@ -1,4 +1,5 @@
 import { SOCIAL_META, FONT_OPTIONS, DEFAULT_THEME_CONFIG } from '../constants.js';
+import SocialIcon from './SocialIcon.jsx';
 
 const CTA_STYLES = {
   green: { background: 'linear-gradient(135deg,#4ADE80,#22C55E)', color: '#000' },
@@ -47,15 +48,17 @@ function BioSocial({ block, tc }) {
   return (
     <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', justifyContent: tc.textAlign === 'left' ? 'flex-start' : 'center', padding: '4px 0' }}>
       {platforms.map(p => {
-        const m = SOCIAL_META[p] || { icon: '🔗' };
+        const m = SOCIAL_META[p] || {};
         return (
-          <div key={p} title={p} style={{
+          <div key={p} title={m.label || p} style={{
             width: 40, height: 40, borderRadius: tc.linkRadius,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 17, cursor: 'pointer',
+            cursor: 'pointer',
             background: socBg,
             border: `1px solid ${tc.accentColor}28`,
-          }}>{m.icon}</div>
+          }}>
+            <SocialIcon platform={p} size={17} color={m.color || tc.textColor} />
+          </div>
         );
       })}
     </div>

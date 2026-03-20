@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { SOCIAL_META } from '../constants.js';
+import SocialIcon from './SocialIcon.jsx';
 
 export default function EditModal({ block, onSave, onClose }) {
   const [title, setTitle]     = useState('');
@@ -74,23 +75,29 @@ export default function EditModal({ block, onSave, onClose }) {
         {/* Social fields */}
         {block.type === 'social' && (
           <Field label="Platforms">
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {Object.entries(SOCIAL_META).map(([p, m]) => (
-                <div
-                  key={p}
-                  onClick={() => togglePlatform(p)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 5,
-                    padding: '5px 10px',
-                    background: 'var(--surface-2)',
-                    border: `1px solid ${platforms.includes(p) ? 'var(--green)' : 'var(--border-2)'}`,
-                    borderRadius: 6, fontSize: 11.5,
-                    cursor: 'pointer', userSelect: 'none',
-                    color: platforms.includes(p) ? 'var(--green)' : 'var(--text)',
-                    transition: 'all 0.15s',
-                  }}
-                >{m.icon} {m.label}</div>
-              ))}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+              {Object.entries(SOCIAL_META).map(([p, m]) => {
+                const selected = platforms.includes(p);
+                return (
+                  <div
+                    key={p}
+                    onClick={() => togglePlatform(p)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '7px 10px',
+                      background: selected ? 'rgba(74,222,128,0.07)' : 'var(--surface-2)',
+                      border: `1px solid ${selected ? 'var(--green)' : 'var(--border-2)'}`,
+                      borderRadius: 7, fontSize: 12, fontWeight: 500,
+                      cursor: 'pointer', userSelect: 'none',
+                      color: selected ? 'var(--green)' : 'var(--text-2)',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    <SocialIcon platform={p} size={15} color={selected ? '#4ADE80' : m.color || '#888'} />
+                    {m.label}
+                  </div>
+                );
+              })}
             </div>
           </Field>
         )}

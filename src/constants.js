@@ -1,14 +1,26 @@
 export const EMOJIS = ['🎨','🎯','🔥','⚡','🌟','💫','🦄','🎸','🎪','💎','🌈','🚀','🎭','🍀','🦋'];
 
 export const SOCIAL_META = {
-  instagram: { icon: '📸', label: 'Instagram' },
-  twitter:   { icon: '🐦', label: 'X / Twitter' },
-  tiktok:    { icon: '🎵', label: 'TikTok' },
-  youtube:   { icon: '▶️', label: 'YouTube' },
-  linkedin:  { icon: '💼', label: 'LinkedIn' },
-  github:    { icon: '💻', label: 'GitHub' },
-  twitch:    { icon: '🟣', label: 'Twitch' },
-  spotify:   { icon: '🎧', label: 'Spotify' },
+  instagram:  { label: 'Instagram',  color: '#E1306C' },
+  twitter:    { label: 'X / Twitter',color: '#ffffff' },
+  tiktok:     { label: 'TikTok',     color: '#ffffff' },
+  youtube:    { label: 'YouTube',    color: '#FF0000' },
+  linkedin:   { label: 'LinkedIn',   color: '#0A66C2' },
+  github:     { label: 'GitHub',     color: '#ffffff' },
+  twitch:     { label: 'Twitch',     color: '#9146FF' },
+  spotify:    { label: 'Spotify',    color: '#1DB954' },
+  facebook:   { label: 'Facebook',   color: '#1877F2' },
+  discord:    { label: 'Discord',    color: '#5865F2' },
+  pinterest:  { label: 'Pinterest',  color: '#E60023' },
+  snapchat:   { label: 'Snapchat',   color: '#FFFC00' },
+  reddit:     { label: 'Reddit',     color: '#FF4500' },
+  whatsapp:   { label: 'WhatsApp',   color: '#25D366' },
+  telegram:   { label: 'Telegram',   color: '#26A5E4' },
+  behance:    { label: 'Behance',    color: '#1769FF' },
+  dribbble:   { label: 'Dribbble',   color: '#EA4C89' },
+  medium:     { label: 'Medium',     color: '#ffffff' },
+  substack:   { label: 'Substack',   color: '#FF6719' },
+  patreon:    { label: 'Patreon',    color: '#FF424D' },
 };
 
 export const THEMES = [
