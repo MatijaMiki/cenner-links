@@ -109,47 +109,6 @@ export default function Login() {
           Use your Cenner account to continue.
         </div>
 
-        {/* Social buttons */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-          {SOCIAL_PROVIDERS.map(p => (
-            <button
-              key={p.id}
-              onClick={() => handleSocial(p)}
-              disabled={!!socialLoading || loading}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
-                padding: '9px 16px',
-                background: 'var(--surface-2)',
-                border: '1px solid var(--border-2)',
-                borderRadius: 9, color: 'var(--text)',
-                fontSize: 13, fontWeight: 500,
-                cursor: socialLoading || loading ? 'not-allowed' : 'pointer',
-                fontFamily: 'Inter, sans-serif',
-                transition: 'all 0.15s',
-                opacity: socialLoading && socialLoading !== p.id ? 0.5 : 1,
-              }}
-              onMouseEnter={e => { if (!socialLoading && !loading) e.currentTarget.style.borderColor = 'var(--border)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-2)'; }}
-            >
-              {socialLoading === p.id ? (
-                <span style={{ fontSize: 12, color: 'var(--text-3)' }}>Connecting…</span>
-              ) : (
-                <>
-                  {p.icon}
-                  <span>Continue with {p.label}</span>
-                </>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Divider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-          <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 500 }}>or</span>
-          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-        </div>
-
         {/* Email/password */}
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 10 }}>
@@ -191,7 +150,48 @@ export default function Login() {
           </button>
         </form>
 
-        <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 20, lineHeight: 1.5 }}>
+        {/* Divider */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 20, marginBottom: 16 }}>
+          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 500 }}>or continue with</span>
+          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+
+        {/* Social buttons */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {SOCIAL_PROVIDERS.map(p => (
+            <button
+              key={p.id}
+              onClick={() => handleSocial(p)}
+              disabled={!!socialLoading || loading}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
+                padding: '9px 16px',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border-2)',
+                borderRadius: 9, color: 'var(--text)',
+                fontSize: 13, fontWeight: 500,
+                cursor: socialLoading || loading ? 'not-allowed' : 'pointer',
+                fontFamily: 'Inter, sans-serif',
+                transition: 'all 0.15s',
+                opacity: socialLoading && socialLoading !== p.id ? 0.5 : 1,
+              }}
+              onMouseEnter={e => { if (!socialLoading && !loading) e.currentTarget.style.borderColor = 'var(--border)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-2)'; }}
+            >
+              {socialLoading === p.id ? (
+                <span style={{ fontSize: 12, color: 'var(--text-3)' }}>Connecting…</span>
+              ) : (
+                <>
+                  {p.icon}
+                  <span>Continue with {p.label}</span>
+                </>
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 16, lineHeight: 1.5 }}>
           Same account as <span style={{ color: 'var(--green)' }}>cenner.hr</span>
         </div>
       </div>
