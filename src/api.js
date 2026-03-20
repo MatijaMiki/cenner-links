@@ -22,6 +22,18 @@ async function req(method, path, body) {
   return res.json();
 }
 
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+export async function login(email, password) {
+  const res = await fetch(`${API_BASE}/portal/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Login failed');
+  return data;
+}
+
 // ─── Link page ───────────────────────────────────────────────────────────────
 export const getMyPage   = ()       => req('GET',  '/links/page');
 export const upsertPage  = (data)   => req('PUT',  '/links/page', data);

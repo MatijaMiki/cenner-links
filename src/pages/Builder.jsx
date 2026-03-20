@@ -30,9 +30,15 @@ function useToast() {
   return [state, show];
 }
 
+const TIER_LABELS = { free: 'Free', starter: 'Free', pro: 'Pro', enterprise: 'Ultra' };
+const TIER_COLORS = { free: 'var(--text-3)', starter: 'var(--text-3)', pro: 'var(--green)', enterprise: 'var(--pink)' };
+const UPGRADE_URL = 'https://cenner.hr/pricing';
+
 export default function Builder() {
   const [page, setPage]       = useState(DEFAULT_PAGE);
   const [blocks, setBlocks]   = useState([]);
+  const [tier, setTier]       = useState('free');
+  const [limit, setLimit]     = useState(2);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving]   = useState(false);
   const [editingBlock, setEditingBlock] = useState(null);
@@ -48,6 +54,8 @@ export default function Builder() {
       .then(data => {
         setPage(data.page || DEFAULT_PAGE);
         setBlocks((data.blocks || []).sort((a, b) => a.order - b.order));
+        if (data.tier) setTier(data.tier);
+        if (data.limit) setLimit(data.limit);
       })
       .catch(() => { /* no page yet – stay at defaults */ })
       .finally(() => setLoading(false));
@@ -102,7 +110,11 @@ export default function Builder() {
       setBlocks(prev => [...prev, block]);
       setEditingBlock(block);
     } catch (e) {
-      showToast('Error: ' + e.message);
+      if (e.message && e.message.includes('limit')) {
+        showToast('Upgrade your plan to add more links');
+      } else {
+        showToast('Error: ' + e.message);
+      }
     }
   }
 
@@ -259,7 +271,22 @@ export default function Builder() {
 
             {/* Blocks panel */}
             <div style={{ padding: 16, borderBottom: '1px solid var(--border)' }}>
-              <div className="panel-label">Blocks</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <div className="panel-label" style={{ marginBottom: 0 }}>Blocks</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 10.5, color: 'var(--text-3)', fontWeight: 500 }}>
+                    {blocks.length}/{limit}
+                  </span>
+                  <span style={{
+                    fontSize: 9.5, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase',
+                    color: TIER_COLORS[tier] || 'var(--text-3)',
+                    background: tier === 'enterprise' ? 'rgba(244,114,182,0.1)' : tier === 'pro' ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.06)',
+                    padding: '2px 6px', borderRadius: 4,
+                  }}>
+                    {TIER_LABELS[tier] || 'Free'}
+                  </span>
+                </div>
+              </div>
               {blocks.length === 0
                 ? <div style={{ fontSize: 12, color: 'var(--text-3)', textAlign: 'center', padding: '12px 0' }}>No blocks yet.</div>
                 : (
@@ -282,31 +309,58 @@ export default function Builder() {
             {/* Add block panel */}
             <div style={{ padding: 16 }}>
               <div className="panel-label">Add Block</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                {Object.entries(BLOCK_TYPES).map(([type, meta]) => (
-                  <button
-                    key={type}
-                    onClick={() => handleAddBlock(type)}
+              {blocks.length >= limit ? (
+                <div style={{
+                  background: 'rgba(244,114,182,0.06)', border: '1px solid rgba(244,114,182,0.2)',
+                  borderRadius: 10, padding: '14px 14px', textAlign: 'center',
+                }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--pink)', marginBottom: 4 }}>
+                    {limit}-link limit reached
+                  </div>
+                  <div style={{ fontSize: 11.5, color: 'var(--text-3)', marginBottom: 12, lineHeight: 1.5 }}>
+                    {tier === 'pro' ? 'Upgrade to Ultra for 10 links.' : 'Upgrade to Pro for 5 links or Ultra for 10.'}
+                  </div>
+                  <a
+                    href={UPGRADE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     style={{
-                      display: 'flex', alignItems: 'center', gap: 7,
-                      padding: '9px 10px',
-                      background: 'var(--surface-2)',
-                      border: '1px dashed var(--border-2)',
-                      borderRadius: 8, color: 'var(--text-2)',
-                      fontSize: 12, fontWeight: 500,
-                      cursor: 'pointer', fontFamily: 'Inter,sans-serif',
-                      letterSpacing: '-0.01em', transition: 'all 0.15s',
+                      display: 'inline-block',
+                      background: 'linear-gradient(135deg,#4ADE80,#F472B6)',
+                      color: '#000', fontWeight: 700, fontSize: 12,
+                      padding: '7px 16px', borderRadius: 7, textDecoration: 'none',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--green)'; e.currentTarget.style.background = 'rgba(74,222,128,0.05)'; e.currentTarget.style.color = 'var(--text)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-2)'; e.currentTarget.style.background = 'var(--surface-2)'; e.currentTarget.style.color = 'var(--text-2)'; }}
                   >
-                    <div style={{ width: 22, height: 22, borderRadius: 5, background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, flexShrink: 0 }}>
-                      {meta.icon}
-                    </div>
-                    {meta.label}
-                  </button>
-                ))}
-              </div>
+                    Upgrade plan
+                  </a>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                  {Object.entries(BLOCK_TYPES).map(([type, meta]) => (
+                    <button
+                      key={type}
+                      onClick={() => handleAddBlock(type)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 7,
+                        padding: '9px 10px',
+                        background: 'var(--surface-2)',
+                        border: '1px dashed var(--border-2)',
+                        borderRadius: 8, color: 'var(--text-2)',
+                        fontSize: 12, fontWeight: 500,
+                        cursor: 'pointer', fontFamily: 'Inter,sans-serif',
+                        letterSpacing: '-0.01em', transition: 'all 0.15s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--green)'; e.currentTarget.style.background = 'rgba(74,222,128,0.05)'; e.currentTarget.style.color = 'var(--text)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-2)'; e.currentTarget.style.background = 'var(--surface-2)'; e.currentTarget.style.color = 'var(--text-2)'; }}
+                    >
+                      <div style={{ width: 22, height: 22, borderRadius: 5, background: 'var(--surface-3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, flexShrink: 0 }}>
+                        {meta.icon}
+                      </div>
+                      {meta.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>

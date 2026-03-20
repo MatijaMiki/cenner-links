@@ -1,16 +1,28 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../api.js';
 
 export default function Login() {
-  const [token, setToken] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail]       = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState('');
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (!token.trim()) { setError('Paste your portal token'); return; }
-    localStorage.setItem('portal_token', token.trim());
-    navigate('/');
+    if (!email.trim() || !password) { setError('Enter your email and password'); return; }
+    setLoading(true);
+    setError('');
+    try {
+      const data = await login(email.trim(), password);
+      localStorage.setItem('portal_token', data.token);
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -37,35 +49,52 @@ export default function Login() {
 
         <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 6 }}>Sign in</div>
         <div style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 24 }}>
-          Paste your Cenner portal token to continue.
+          Use your Cenner account to continue.
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-              Portal Token
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 5 }}>
+              Email
+            </div>
+            <input
+              className="inp"
+              type="email"
+              placeholder="you@cenner.hr"
+              value={email}
+              onChange={e => { setEmail(e.target.value); setError(''); }}
+              autoFocus
+              autoComplete="email"
+            />
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 5 }}>
+              Password
             </div>
             <input
               className="inp"
               type="password"
-              placeholder="eyJ…"
-              value={token}
-              onChange={e => { setToken(e.target.value); setError(''); }}
-              autoFocus
+              placeholder="••••••••"
+              value={password}
+              onChange={e => { setPassword(e.target.value); setError(''); }}
+              autoComplete="current-password"
             />
-            {error && <div style={{ fontSize: 11.5, color: '#F87171', marginTop: 5 }}>{error}</div>}
           </div>
+
+          {error && <div style={{ fontSize: 11.5, color: '#F87171', marginBottom: 10 }}>{error}</div>}
+
           <button
             type="submit"
             className="btn-primary"
-            style={{ width: '100%', padding: '9px 16px', fontSize: 13 }}
+            style={{ width: '100%', padding: '9px 16px', fontSize: 13, opacity: loading ? 0.6 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+            disabled={loading}
           >
-            Continue
+            {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
         <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 20, lineHeight: 1.5 }}>
-          Get your token from the Cenner portal → Settings → Developer.
+          Same account as <span style={{ color: 'var(--green)' }}>cenner.hr</span>
         </div>
       </div>
     </div>
