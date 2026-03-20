@@ -4,7 +4,8 @@ import PhonePreview from '../components/PhonePreview.jsx';
 import BlockItem from '../components/BlockItem.jsx';
 import EditModal from '../components/EditModal.jsx';
 import Toast from '../components/Toast.jsx';
-import { EMOJIS, THEMES, BLOCK_TYPES } from '../constants.js';
+import ThemeEditor from '../components/ThemeEditor.jsx';
+import { EMOJIS, BLOCK_TYPES, DEFAULT_THEME_CONFIG } from '../constants.js';
 import * as api from '../api.js';
 
 const DEFAULT_PAGE = {
@@ -35,15 +36,16 @@ const TIER_COLORS = { free: 'var(--text-3)', starter: 'var(--text-3)', pro: 'var
 const UPGRADE_URL = 'https://cenner.hr/pricing';
 
 export default function Builder() {
-  const [page, setPage]       = useState(DEFAULT_PAGE);
-  const [blocks, setBlocks]   = useState([]);
-  const [tier, setTier]       = useState('free');
-  const [limit, setLimit]     = useState(2);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving]   = useState(false);
+  const [page, setPage]           = useState(DEFAULT_PAGE);
+  const [themeConfig, setThemeConfig] = useState(DEFAULT_THEME_CONFIG);
+  const [blocks, setBlocks]       = useState([]);
+  const [tier, setTier]           = useState('free');
+  const [limit, setLimit]         = useState(2);
+  const [loading, setLoading]     = useState(true);
+  const [saving, setSaving]       = useState(false);
   const [editingBlock, setEditingBlock] = useState(null);
-  const [emojiIdx, setEmojiIdx] = useState(0);
-  const [toast, showToast]    = useToast();
+  const [emojiIdx, setEmojiIdx]   = useState(0);
+  const [toast, showToast]        = useToast();
 
   // Debounce ref for profile auto-save
   const saveTimer = useRef(null);
@@ -54,7 +56,8 @@ export default function Builder() {
       .then(data => {
         setPage(data.page || DEFAULT_PAGE);
         setBlocks((data.blocks || []).sort((a, b) => a.order - b.order));
-        if (data.tier) setTier(data.tier);
+        if (data.page?.themeConfig) setThemeConfig({ ...DEFAULT_THEME_CONFIG, ...data.page.themeConfig });
+        if (data.tier)  setTier(data.tier);
         if (data.limit) setLimit(data.limit);
       })
       .catch(() => { /* no page yet – stay at defaults */ })
@@ -75,6 +78,11 @@ export default function Builder() {
     const updated = { ...page, [field]: value };
     setPage(updated);
     saveProfile(updated);
+  }
+
+  function handleThemeChange(newTc) {
+    setThemeConfig(newTc);
+    saveProfile({ ...page, themeConfig: newTc });
   }
 
   // ─── Publish ───────────────────────────────────────────────────────────────
@@ -238,35 +246,7 @@ export default function Builder() {
             {/* Theme panel */}
             <div style={{ padding: 16, borderBottom: '1px solid var(--border)' }}>
               <div className="panel-label">Theme</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 6 }}>
-                {THEMES.map(t => (
-                  <div
-                    key={t.id}
-                    onClick={() => updatePage('theme', t.id)}
-                    style={{ cursor: 'pointer', transition: 'transform 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                  >
-                    <div style={{
-                      aspectRatio: '1', borderRadius: 9, overflow: 'hidden',
-                      outline: page.theme === t.id ? '2px solid var(--green)' : '2px solid transparent',
-                      outlineOffset: 2, transition: 'outline 0.15s',
-                    }}>
-                      <div style={{
-                        width: '100%', height: '100%',
-                        background: t.bg, display: 'flex', flexDirection: 'column',
-                        alignItems: 'center', justifyContent: 'center', gap: 3, padding: 4,
-                      }}>
-                        <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'linear-gradient(135deg,#4ADE80,#F472B6)' }} />
-                        <div style={{ height: 3, borderRadius: 99, width: '70%', background: t.bar }} />
-                        <div style={{ height: 3, borderRadius: 99, width: '55%', background: t.bar }} />
-                        <div style={{ height: 2.5, borderRadius: 99, width: '50%', background: t.accent, opacity: 0.8 }} />
-                      </div>
-                    </div>
-                    <div style={{ fontSize: 9, color: 'var(--text-3)', textAlign: 'center', marginTop: 3, fontWeight: 500 }}>{t.label}</div>
-                  </div>
-                ))}
-              </div>
+              <ThemeEditor tc={themeConfig} onChange={handleThemeChange} />
             </div>
 
             {/* Blocks panel */}
@@ -383,7 +363,7 @@ export default function Builder() {
             <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--green)' }} />
             Live preview
           </div>
-          <PhonePreview page={page} blocks={blocks} />
+          <PhonePreview page={{ ...page, themeConfig }} blocks={blocks} />
         </div>
       </div>
 
