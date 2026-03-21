@@ -71,6 +71,11 @@ export const updateBlock = (id, d)  => req('PUT',    `/links/blocks/${id}`, d);
 export const deleteBlock = (id)     => req('DELETE', `/links/blocks/${id}`);
 export const reorderBlocks = (ids)  => req('PUT',    '/links/blocks/reorder', { ids });
 
+// ─── Links Subscription ──────────────────────────────────────────────────────
+export const getSubscriptionStatus = ()     => req('GET',  '/links/subscription/status');
+export const createCheckout        = (plan) => req('POST', '/links/subscription/checkout', { plan });
+export const openPortal            = ()     => req('POST', '/links/subscription/portal');
+
 // ─── Analytics ───────────────────────────────────────────────────────────────
 export const getAnalytics = (days = 7) => req('GET', `/links/analytics?days=${days}`);
 

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Nav from '../components/Nav.jsx';
 import PhonePreview from '../components/PhonePreview.jsx';
 import BlockItem from '../components/BlockItem.jsx';
@@ -32,11 +33,12 @@ function useToast() {
   return [state, show];
 }
 
-const TIER_LABELS = { free: 'Free', starter: 'Free', pro: 'Pro', enterprise: 'Ultra' };
-const TIER_COLORS = { free: 'var(--text-3)', starter: 'var(--text-3)', pro: 'var(--green)', enterprise: 'var(--pink)' };
-const UPGRADE_URL = 'https://cenner.hr/pricing';
+const TIER_LABELS = { free: 'Free', pro: 'Pro', ultra: 'Ultra' };
+const TIER_COLORS = { free: 'var(--text-3)', pro: 'var(--green)', ultra: 'var(--pink)' };
+const TIER_BG    = { free: 'rgba(255,255,255,0.06)', pro: 'rgba(74,222,128,0.1)', ultra: 'rgba(244,114,182,0.1)' };
 
 export default function Builder() {
+  const navigate = useNavigate();
   const [page, setPage]           = useState(DEFAULT_PAGE);
   const [themeConfig, setThemeConfig] = useState(DEFAULT_THEME_CONFIG);
   const [blocks, setBlocks]       = useState([]);
@@ -59,6 +61,15 @@ export default function Builder() {
 
   // Debounce ref for profile auto-save
   const saveTimer = useRef(null);
+
+  // ─── Handle post-checkout success ─────────────────────────────────────────
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('subscription') === 'success') {
+      showToast('Subscription activated!');
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
 
   // ─── Load ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -428,12 +439,12 @@ export default function Builder() {
                 <div className="panel-label" style={{ marginBottom: 0 }}>Blocks</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 10.5, color: 'var(--text-3)', fontWeight: 500 }}>
-                    {blocks.length}/{limit}
+                    {blocks.length}/{limit === null ? '∞' : limit}
                   </span>
                   <span style={{
                     fontSize: 9.5, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase',
                     color: TIER_COLORS[tier] || 'var(--text-3)',
-                    background: tier === 'enterprise' ? 'rgba(244,114,182,0.1)' : tier === 'pro' ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.06)',
+                    background: TIER_BG[tier] || 'rgba(255,255,255,0.06)',
                     padding: '2px 6px', borderRadius: 4,
                   }}>
                     {TIER_LABELS[tier] || 'Free'}
@@ -466,30 +477,30 @@ export default function Builder() {
             {/* Add block panel */}
             <div style={{ padding: 16 }}>
               <div className="panel-label">Add Block</div>
-              {blocks.length >= limit ? (
+              {limit !== null && blocks.length >= limit ? (
                 <div style={{
                   background: 'rgba(244,114,182,0.06)', border: '1px solid rgba(244,114,182,0.2)',
-                  borderRadius: 10, padding: '14px 14px', textAlign: 'center',
+                  borderRadius: 10, padding: '16px', textAlign: 'center',
                 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--pink)', marginBottom: 4 }}>
-                    {limit}-link limit reached
+                    {limit}-block limit reached
                   </div>
-                  <div style={{ fontSize: 11.5, color: 'var(--text-3)', marginBottom: 12, lineHeight: 1.5 }}>
-                    {tier === 'pro' ? 'Upgrade to Ultra for 10 links.' : 'Upgrade to Pro for 5 links or Ultra for 10.'}
+                  <div style={{ fontSize: 11.5, color: 'var(--text-3)', marginBottom: 12, lineHeight: 1.6 }}>
+                    {tier === 'pro'
+                      ? 'Upgrade to Ultra for unlimited blocks.'
+                      : 'Pro gives you 10 blocks. Ultra is unlimited.'}
                   </div>
-                  <a
-                    href={UPGRADE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => navigate('/pricing')}
                     style={{
-                      display: 'inline-block',
                       background: 'linear-gradient(135deg,#4ADE80,#F472B6)',
                       color: '#000', fontWeight: 700, fontSize: 12,
-                      padding: '7px 16px', borderRadius: 7, textDecoration: 'none',
+                      padding: '8px 18px', borderRadius: 7,
+                      border: 'none', cursor: 'pointer', fontFamily: 'Inter,sans-serif',
                     }}
                   >
-                    Upgrade plan
-                  </a>
+                    View plans
+                  </button>
                 </div>
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>

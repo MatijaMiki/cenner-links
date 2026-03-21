@@ -6,6 +6,7 @@ export default function Nav({ slug, published, onPublish, saving }) {
 
   const isBuilder   = pathname === '/';
   const isAnalytics = pathname === '/analytics';
+  const isPricing   = pathname === '/pricing';
 
   function handleCopy() {
     if (!slug) return;
@@ -44,7 +45,7 @@ export default function Nav({ slug, published, onPublish, saving }) {
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 2 }}>
-        {[['/', 'Builder'], ['/analytics', 'Analytics']].map(([path, label]) => (
+        {[['/', 'Builder'], ['/analytics', 'Analytics'], ['/pricing', 'Pricing']].map(([path, label]) => (
           <button
             key={path}
             onClick={() => navigate(path)}
@@ -53,10 +54,10 @@ export default function Nav({ slug, published, onPublish, saving }) {
               borderRadius: 6,
               fontSize: 13,
               fontWeight: 500,
-              color: (path === '/' ? isBuilder : isAnalytics) ? 'var(--text)' : 'var(--text-2)',
+              color: pathname === path ? 'var(--text)' : 'var(--text-2)',
               cursor: 'pointer',
               border: 'none',
-              background: (path === '/' ? isBuilder : isAnalytics) ? 'var(--surface-2)' : 'transparent',
+              background: pathname === path ? 'var(--surface-2)' : 'transparent',
               fontFamily: 'Inter, sans-serif',
               transition: 'all 0.15s',
               letterSpacing: '-0.01em',

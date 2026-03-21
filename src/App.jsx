@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import * as api from './api.js';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 import Builder from './pages/Builder.jsx';
 import Analytics from './pages/Analytics.jsx';
@@ -9,6 +10,7 @@ import Terms from './pages/Terms.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 import CookiePolicy from './pages/CookiePolicy.jsx';
 import CookieBanner, { getConsent } from './components/CookieBanner.jsx';
+import Pricing from './pages/Pricing.jsx';
 
 function SSOHandler() {
   const navigate = useNavigate();
@@ -24,6 +26,14 @@ function SSOHandler() {
   }, []);
 
   return null;
+}
+
+function PricingWrapper() {
+  const [tier, setTier] = useState('free');
+  useEffect(() => {
+    api.getSubscriptionStatus().then(d => setTier(d.tier)).catch(() => {});
+  }, []);
+  return <Pricing currentTier={tier} />;
 }
 
 function Protected({ children }) {
@@ -58,6 +68,14 @@ export default function App() {
             element={
               <Protected>
                 <Analytics />
+              </Protected>
+            }
+          />
+          <Route
+            path="/pricing"
+            element={
+              <Protected>
+                <PricingWrapper />
               </Protected>
             }
           />
