@@ -78,8 +78,8 @@ export default function Builder() {
         setPage(data.page || DEFAULT_PAGE);
         setBlocks((data.blocks || []).sort((a, b) => a.order - b.order));
         if (data.page?.themeConfig) setThemeConfig({ ...DEFAULT_THEME_CONFIG, ...data.page.themeConfig });
-        if (data.tier)        setTier(data.tier);
-        if (data.limit)       setLimit(data.limit);
+        if (data.tier !== undefined)  setTier(data.tier);
+        if ('limit' in data)          setLimit(data.limit);
         if (data.userAvatar)  setUserAvatar(data.userAvatar);
         if (data.kycVerified) setKycVerified(data.kycVerified);
       })

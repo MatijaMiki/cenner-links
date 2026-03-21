@@ -113,6 +113,8 @@ export default function Analytics() {
   const [days, setDays]     = useState('7');
   const [data, setData]     = useState(null);
   const [page, setPage]     = useState(null);
+  const [maxDays, setMaxDays] = useState(7);
+  const [tier, setTier]     = useState('free');
   const [toast, showToast]  = useToast();
 
   useEffect(() => {
@@ -121,7 +123,11 @@ export default function Analytics() {
 
   useEffect(() => {
     api.getAnalytics(days)
-      .then(setData)
+      .then(d => {
+        setData(d);
+        if (d.maxDays) setMaxDays(d.maxDays);
+        if (d.tier)    setTier(d.tier);
+      })
       .catch(() => setData(buildDemoData(days)));
   }, [days]);
 
@@ -152,20 +158,35 @@ export default function Analytics() {
             background: 'var(--surface)', border: '1px solid var(--border-2)',
             borderRadius: 8, padding: 3,
           }}>
-            {['7','30','90'].map(p => (
-              <button
-                key={p}
-                onClick={() => setDays(p)}
-                style={{
-                  padding: '5px 12px', borderRadius: 6,
-                  fontSize: 12, fontWeight: 500,
-                  color: days === p ? 'var(--text)' : 'var(--text-3)',
-                  background: days === p ? 'var(--surface-2)' : 'transparent',
-                  border: 'none', cursor: 'pointer',
-                  fontFamily: 'Inter,sans-serif', transition: 'all 0.15s',
-                }}
-              >{p}d</button>
-            ))}
+            {[
+              { p: '7',  minTier: 'free'  },
+              { p: '30', minTier: 'pro'   },
+              { p: '90', minTier: 'ultra' },
+            ].map(({ p, minTier }) => {
+              const locked = parseInt(p) > maxDays;
+              return (
+                <button
+                  key={p}
+                  onClick={() => {
+                    if (locked) {
+                      showToast(`${p}-day analytics requires ${minTier === 'pro' ? 'Pro' : 'Ultra'} — upgrade at /pricing`);
+                      return;
+                    }
+                    setDays(p);
+                  }}
+                  title={locked ? `Upgrade to ${minTier === 'pro' ? 'Pro' : 'Ultra'} to unlock ${p}-day history` : ''}
+                  style={{
+                    padding: '5px 12px', borderRadius: 6,
+                    fontSize: 12, fontWeight: 500,
+                    color: locked ? 'var(--text-3)' : days === p ? 'var(--text)' : 'var(--text-3)',
+                    background: days === p && !locked ? 'var(--surface-2)' : 'transparent',
+                    border: 'none', cursor: locked ? 'not-allowed' : 'pointer',
+                    fontFamily: 'Inter,sans-serif', transition: 'all 0.15s',
+                    opacity: locked ? 0.4 : 1,
+                  }}
+                >{p}d{locked ? ' 🔒' : ''}</button>
+              );
+            })}
           </div>
         </div>
 

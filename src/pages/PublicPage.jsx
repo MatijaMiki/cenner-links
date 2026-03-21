@@ -256,17 +256,19 @@ export default function PublicPage() {
             </a>
           )}
 
-          {/* Footer */}
-          <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 8, opacity: 0.3, alignSelf: isLeft ? 'flex-start' : 'center' }}>
-            <div style={{
-              width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-              background: 'linear-gradient(135deg,#4ADE80,#22C55E)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span style={{ fontSize: 14, fontWeight: 900, color: '#000', lineHeight: 1, letterSpacing: '-0.05em' }}>C</span>
+          {/* Footer — hidden for Pro/Ultra */}
+          {!page.removeBranding && (
+            <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 8, opacity: 0.3, alignSelf: isLeft ? 'flex-start' : 'center' }}>
+              <div style={{
+                width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                background: 'linear-gradient(135deg,#4ADE80,#22C55E)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ fontSize: 14, fontWeight: 900, color: '#000', lineHeight: 1, letterSpacing: '-0.05em' }}>C</span>
+              </div>
+              <span style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, fontWeight: 600, letterSpacing: '0.02em' }}>Powered by Cenner</span>
             </div>
-            <span style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, fontWeight: 600, letterSpacing: '0.02em' }}>Powered by Cenner</span>
-          </div>
+          )}
         </div>
       </div>
       <Footer dark={true} />
