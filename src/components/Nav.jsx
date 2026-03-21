@@ -9,7 +9,7 @@ export default function Nav({ slug, published, onPublish, saving }) {
 
   function handleCopy() {
     if (!slug) return;
-    navigator.clipboard.writeText(`${window.location.origin}/p/${slug}`).catch(() => {});
+    navigator.clipboard.writeText(`https://links.cenner.hr/p/${slug}`).catch(() => {});
   }
 
   return (
@@ -85,7 +85,7 @@ export default function Nav({ slug, published, onPublish, saving }) {
               background: published ? 'var(--green)' : 'var(--text-3)',
               flexShrink: 0,
             }} />
-            cenner.hr/p/{slug}
+            links.cenner.hr/p/{slug}
           </button>
         )}
 

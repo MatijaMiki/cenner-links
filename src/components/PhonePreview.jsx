@@ -162,12 +162,25 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
             }}>{page.emoji || '🎨'}</div>
           )}
 
-          {/* Name */}
+          {/* Name + KYC badge */}
           <div style={{
-            fontSize: tc.nameSize, fontWeight: 700, letterSpacing: '-0.02em',
-            marginBottom: 3, textAlign: isLeft ? 'left' : 'center',
-            fontFamily, transition: 'all 0.3s', textShadow,
-          }}>{page.name}</div>
+            display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3,
+            justifyContent: isLeft ? 'flex-start' : 'center', flexWrap: 'wrap',
+          }}>
+            <span style={{
+              fontSize: tc.nameSize, fontWeight: 700, letterSpacing: '-0.02em',
+              fontFamily, transition: 'all 0.3s', textShadow,
+            }}>{page.name}</span>
+            {page.kycVerified && (
+              <span title="Identity Verified" style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
+                background: 'linear-gradient(135deg,#F59E0B,#D97706)',
+                fontSize: 10, fontWeight: 900, color: '#000',
+                boxShadow: '0 1px 4px rgba(245,158,11,0.5)',
+              }}>✓</span>
+            )}
+          </div>
 
           {/* Handle */}
           <div style={{

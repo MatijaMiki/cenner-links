@@ -19,21 +19,37 @@ function blockSubtitle(b) {
   return '';
 }
 
-export default function BlockItem({ block, selected, onToggle, onEdit, onDelete }) {
+export default function BlockItem({
+  block, selected, onToggle, onEdit, onDelete,
+  onDragStart, onDragOver, onDragEnd, isDragOver,
+}) {
   const meta = BLOCK_TYPES[block.type] || { icon: '?', colorClass: '' };
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 8,
-      padding: '9px 10px',
-      background: selected ? 'rgba(74,222,128,0.04)' : 'var(--surface-2)',
-      border: `1px solid ${selected ? 'var(--green)' : 'var(--border-2)'}`,
-      borderRadius: 9,
-      cursor: 'default',
-      transition: 'border-color 0.15s',
-      animation: 'fadeSlideIn 0.2s ease both',
-    }}>
-      <span style={{ color: 'var(--text-3)', fontSize: 12, cursor: 'grab', flexShrink: 0 }}>⠿</span>
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={e => { e.preventDefault(); onDragOver(e); }}
+      onDragEnd={onDragEnd}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '9px 10px',
+        background: isDragOver
+          ? 'rgba(74,222,128,0.06)'
+          : selected ? 'rgba(74,222,128,0.04)' : 'var(--surface-2)',
+        border: `1px solid ${isDragOver ? 'rgba(74,222,128,0.6)' : selected ? 'var(--green)' : 'var(--border-2)'}`,
+        borderRadius: 9,
+        cursor: 'default',
+        transition: 'border-color 0.12s, background 0.12s, opacity 0.12s',
+        animation: 'fadeSlideIn 0.2s ease both',
+        opacity: isDragOver ? 0.7 : 1,
+      }}
+    >
+      {/* Drag handle */}
+      <span
+        style={{ color: 'var(--text-3)', fontSize: 13, cursor: 'grab', flexShrink: 0, lineHeight: 1, userSelect: 'none' }}
+        title="Drag to reorder"
+      >⠿</span>
 
       {/* Icon */}
       <div style={{
@@ -55,7 +71,6 @@ export default function BlockItem({ block, selected, onToggle, onEdit, onDelete 
 
       {/* Actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
-        {/* Toggle */}
         <div
           onClick={() => onToggle(block.id)}
           style={{
@@ -72,7 +87,6 @@ export default function BlockItem({ block, selected, onToggle, onEdit, onDelete 
           }} />
         </div>
 
-        {/* Edit */}
         <button
           onClick={() => onEdit(block.id)}
           style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 5, fontSize: 12, cursor: 'pointer', color: 'var(--text-3)', border: 'none', background: 'transparent', fontFamily: 'Inter,sans-serif', transition: 'all 0.15s' }}
@@ -80,7 +94,6 @@ export default function BlockItem({ block, selected, onToggle, onEdit, onDelete 
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-3)'; }}
         >✏️</button>
 
-        {/* Delete */}
         <button
           onClick={() => onDelete(block.id)}
           style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 5, fontSize: 12, cursor: 'pointer', color: 'var(--text-3)', border: 'none', background: 'transparent', fontFamily: 'Inter,sans-serif', transition: 'all 0.15s' }}

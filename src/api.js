@@ -46,8 +46,9 @@ export async function login(email, password) {
 }
 
 // ─── Link page ───────────────────────────────────────────────────────────────
-export const getMyPage   = ()       => req('GET',  '/links/page');
-export const upsertPage  = (data)   => req('PUT',  '/links/page', data);
+export const getMyPage    = ()      => req('GET',  '/links/page');
+export const checkSlug    = (slug)  => fetch(`${API_BASE}/links/check-slug/${encodeURIComponent(slug)}`).then(r => r.json());
+export const upsertPage   = (data)  => req('PUT',  '/links/page', data);
 export const publishPage = (pub)    => req('PUT',  '/links/page', { published: pub });
 
 export async function uploadAvatar(file) {

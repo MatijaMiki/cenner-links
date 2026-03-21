@@ -119,9 +119,20 @@ export default function PublicPage() {
             }}>{page.emoji || '🎨'}</div>
           )}
 
-          {/* Name */}
-          <div style={{ fontSize: tc.nameSize * 1.4, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4, textAlign: isLeft ? 'left' : 'center', fontFamily, lineHeight: 1.1, textShadow }}>
-            {page.name}
+          {/* Name + KYC badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap', justifyContent: isLeft ? 'flex-start' : 'center' }}>
+            <span style={{ fontSize: tc.nameSize * 1.4, fontWeight: 800, letterSpacing: '-0.03em', fontFamily, lineHeight: 1.1, textShadow }}>
+              {page.name}
+            </span>
+            {page.kycVerified && (
+              <span title="Identity Verified" style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                background: 'linear-gradient(135deg,#F59E0B,#D97706)',
+                fontSize: 13, fontWeight: 900, color: '#000',
+                boxShadow: '0 2px 8px rgba(245,158,11,0.45)',
+              }}>✓</span>
+            )}
           </div>
 
           {/* Handle */}
@@ -209,8 +220,32 @@ export default function PublicPage() {
             })}
           </div>
 
+          {/* View profile on Cenner */}
+          {page.cennerUserId && (
+            <a
+              href={`https://cenner.hr/freelancers/${page.cennerUserId}`}
+              target="_blank" rel="noreferrer"
+              style={{
+                marginTop: 32, display: 'flex', alignItems: 'center', gap: 7,
+                padding: '9px 16px', borderRadius: tc.linkRadius + 2,
+                textDecoration: 'none', fontSize: 13, fontWeight: 600,
+                background: linkBg, border: `1px solid ${linkBorder}`,
+                color: tc.textColor, opacity: 0.65, fontFamily,
+                alignSelf: isLeft ? 'flex-start' : 'center',
+                transition: 'opacity 0.15s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '0.65'}
+            >
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: 'linear-gradient(135deg,#4ADE80,#22C55E)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 10, fontWeight: 900, color: '#000' }}>C</span>
+              </div>
+              View full profile on Cenner
+            </a>
+          )}
+
           {/* Footer */}
-          <div style={{ marginTop: 48, display: 'flex', alignItems: 'center', gap: 8, opacity: 0.3, alignSelf: isLeft ? 'flex-start' : 'center' }}>
+          <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 8, opacity: 0.3, alignSelf: isLeft ? 'flex-start' : 'center' }}>
             <div style={{
               width: 22, height: 22, borderRadius: 6, flexShrink: 0,
               background: 'linear-gradient(135deg,#4ADE80,#22C55E)',

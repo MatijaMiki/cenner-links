@@ -45,11 +45,16 @@ export default function Builder() {
   const [saving, setSaving]       = useState(false);
   const [editingBlock, setEditingBlock] = useState(null);
   const [emojiIdx, setEmojiIdx]   = useState(0);
-  const [userAvatar, setUserAvatar] = useState(null);
+  const [userAvatar, setUserAvatar]   = useState(null);
+  const [kycVerified, setKycVerified] = useState(false);
   const [avatarPanel, setAvatarPanel] = useState(false);
-  const [uploading, setUploading]   = useState(false);
-  const [toast, showToast]          = useToast();
-  const fileInputRef = useRef(null);
+  const [uploading, setUploading]     = useState(false);
+  const [slugStatus, setSlugStatus]   = useState(null); // null | 'checking' | 'available' | 'taken' | 'invalid'
+  const [dragOver, setDragOver]       = useState(null);
+  const [toast, showToast]            = useToast();
+  const fileInputRef  = useRef(null);
+  const dragSrc       = useRef(null);
+  const slugCheckTimer = useRef(null);
 
   // Debounce ref for profile auto-save
   const saveTimer = useRef(null);
@@ -61,10 +66,10 @@ export default function Builder() {
         setPage(data.page || DEFAULT_PAGE);
         setBlocks((data.blocks || []).sort((a, b) => a.order - b.order));
         if (data.page?.themeConfig) setThemeConfig({ ...DEFAULT_THEME_CONFIG, ...data.page.themeConfig });
-        if (data.tier)      setTier(data.tier);
-        if (data.limit)     setLimit(data.limit);
-        if (data.userAvatar) setUserAvatar(data.userAvatar);
-        if (data.page?.avatarUrl) setAvatarUrlInput(data.page.avatarUrl);
+        if (data.tier)        setTier(data.tier);
+        if (data.limit)       setLimit(data.limit);
+        if (data.userAvatar)  setUserAvatar(data.userAvatar);
+        if (data.kycVerified) setKycVerified(data.kycVerified);
       })
       .catch(() => { /* no page yet – stay at defaults */ })
       .finally(() => setLoading(false));
@@ -94,6 +99,42 @@ export default function Builder() {
       try { await api.upsertPage({ themeConfig: newTc }); }
       catch (e) { showToast('Could not save theme — set a URL slug first'); }
     }, 800);
+  }
+
+  // ─── Slug availability check ──────────────────────────────────────────────
+  function triggerSlugCheck(slug) {
+    clearTimeout(slugCheckTimer.current);
+    if (!slug) { setSlugStatus(null); return; }
+    if (!/^[a-z0-9-]{1,60}$/.test(slug)) { setSlugStatus('invalid'); return; }
+    setSlugStatus('checking');
+    slugCheckTimer.current = setTimeout(async () => {
+      try {
+        const res = await api.checkSlug(slug);
+        setSlugStatus(res.available ? 'available' : 'taken');
+      } catch { setSlugStatus(null); }
+    }, 600);
+  }
+
+  // ─── Drag-and-drop reorder ────────────────────────────────────────────────
+  function handleDragStart(idx) {
+    dragSrc.current = idx;
+  }
+
+  function handleDragOver(e, idx) {
+    e.preventDefault();
+    setDragOver(idx);
+    if (dragSrc.current === null || dragSrc.current === idx) return;
+    const updated = [...blocks];
+    const [item] = updated.splice(dragSrc.current, 1);
+    updated.splice(idx, 0, item);
+    setBlocks(updated);
+    dragSrc.current = idx;
+  }
+
+  async function handleDragEnd() {
+    setDragOver(null);
+    dragSrc.current = null;
+    try { await api.reorderBlocks(blocks.map(b => b.id)); } catch {}
   }
 
   // ─── Publish ───────────────────────────────────────────────────────────────
@@ -345,14 +386,29 @@ export default function Builder() {
 
               <div style={{ display: 'flex', gap: 6 }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 4, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>URL slug</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 0, background: 'var(--surface-2)', border: '1px solid var(--border-2)', borderRadius: 7, overflow: 'hidden' }}>
-                    <span style={{ padding: '7px 8px', fontSize: 12, color: 'var(--text-3)', whiteSpace: 'nowrap', borderRight: '1px solid var(--border-2)' }}>cenner.hr/p/</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>URL slug</div>
+                    {slugStatus === 'checking'  && <span style={{ fontSize: 9.5, color: 'var(--text-3)' }}>Checking…</span>}
+                    {slugStatus === 'available' && <span style={{ fontSize: 9.5, color: 'var(--green)', fontWeight: 600 }}>✓ Available</span>}
+                    {slugStatus === 'taken'     && <span style={{ fontSize: 9.5, color: '#F87171', fontWeight: 600 }}>✗ Already taken</span>}
+                    {slugStatus === 'invalid'   && <span style={{ fontSize: 9.5, color: '#F87171', fontWeight: 600 }}>✗ Invalid format</span>}
+                  </div>
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 0,
+                    background: 'var(--surface-2)',
+                    border: `1px solid ${slugStatus === 'taken' || slugStatus === 'invalid' ? '#F87171' : slugStatus === 'available' ? 'var(--green)' : 'var(--border-2)'}`,
+                    borderRadius: 7, overflow: 'hidden', transition: 'border-color 0.2s',
+                  }}>
+                    <span style={{ padding: '7px 8px', fontSize: 11, color: 'var(--text-3)', whiteSpace: 'nowrap', borderRight: '1px solid var(--border-2)', flexShrink: 0 }}>links.cenner.hr/p/</span>
                     <input
                       style={{ flex: 1, padding: '7px 8px', background: 'transparent', border: 'none', outline: 'none', color: 'var(--text)', fontSize: 12, fontFamily: 'Inter,sans-serif' }}
                       placeholder="your-name"
                       value={page.slug || ''}
-                      onChange={e => updatePage('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                      onChange={e => {
+                        const v = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                        updatePage('slug', v);
+                        triggerSlugCheck(v);
+                      }}
                     />
                   </div>
                 </div>
@@ -387,14 +443,18 @@ export default function Builder() {
                 ? <div style={{ fontSize: 12, color: 'var(--text-3)', textAlign: 'center', padding: '12px 0' }}>No blocks yet.</div>
                 : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {blocks.map(b => (
+                    {blocks.map((b, idx) => (
                       <BlockItem
                         key={b.id}
                         block={b}
                         selected={editingBlock?.id === b.id}
+                        isDragOver={dragOver === idx}
                         onToggle={handleToggle}
                         onEdit={id => setEditingBlock(blocks.find(b => b.id === id))}
                         onDelete={handleDeleteBlock}
+                        onDragStart={() => handleDragStart(idx)}
+                        onDragOver={e => handleDragOver(e, idx)}
+                        onDragEnd={handleDragEnd}
                       />
                     ))}
                   </div>
@@ -479,7 +539,7 @@ export default function Builder() {
             <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--green)' }} />
             Live preview
           </div>
-          <PhonePreview page={{ ...page, themeConfig }} blocks={blocks} />
+          <PhonePreview page={{ ...page, themeConfig, kycVerified }} blocks={blocks} />
         </div>
       </div>
 
