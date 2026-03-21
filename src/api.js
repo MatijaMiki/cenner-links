@@ -50,6 +50,20 @@ export const getMyPage   = ()       => req('GET',  '/links/page');
 export const upsertPage  = (data)   => req('PUT',  '/links/page', data);
 export const publishPage = (pub)    => req('PUT',  '/links/page', { published: pub });
 
+export async function uploadAvatar(file) {
+  const token = getToken();
+  const form = new FormData();
+  form.append('avatar', file);
+  const res = await fetch(`${API_BASE}/links/avatar`, {
+    method: 'POST',
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: form,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Upload failed');
+  return data;
+}
+
 // ─── Blocks ──────────────────────────────────────────────────────────────────
 export const addBlock    = (data)   => req('POST',   '/links/blocks', data);
 export const updateBlock = (id, d)  => req('PUT',    `/links/blocks/${id}`, d);

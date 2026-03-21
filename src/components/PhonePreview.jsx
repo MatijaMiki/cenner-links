@@ -12,6 +12,13 @@ function getFont(fontId) {
   return FONT_OPTIONS.find(f => f.id === fontId)?.stack || 'Inter, sans-serif';
 }
 
+function getTextShadow(level) {
+  if (level === 1) return '0 1px 8px rgba(0,0,0,0.65)';
+  if (level === 2) return '0 1px 12px rgba(0,0,0,0.85), 0 2px 4px rgba(0,0,0,0.5)';
+  if (level === 3) return '0 1px 20px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,0.95)';
+  return 'none';
+}
+
 function avatarRadius(shape) {
   if (shape === 'rounded') return '18px';
   if (shape === 'square')  return '4px';
@@ -93,6 +100,7 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
   const activeBlocks = (blocks || []).filter(b => b.active);
   const fontFamily = getFont(tc.font);
   const isLeft = tc.textAlign === 'left';
+  const textShadow = getTextShadow(tc.textShadow || 0);
 
   return (
     <div style={{
@@ -158,13 +166,13 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
           <div style={{
             fontSize: tc.nameSize, fontWeight: 700, letterSpacing: '-0.02em',
             marginBottom: 3, textAlign: isLeft ? 'left' : 'center',
-            fontFamily, transition: 'all 0.3s',
+            fontFamily, transition: 'all 0.3s', textShadow,
           }}>{page.name}</div>
 
           {/* Handle */}
           <div style={{
             fontSize: 11, opacity: 0.45, marginBottom: 7,
-            textAlign: isLeft ? 'left' : 'center',
+            textAlign: isLeft ? 'left' : 'center', textShadow,
           }}>{page.handle}</div>
 
           {/* Bio */}
@@ -172,7 +180,7 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
             <div style={{
               fontSize: tc.bioSize, textAlign: isLeft ? 'left' : 'center',
               lineHeight: 1.55, opacity: 0.6,
-              marginBottom: 18, maxWidth: isLeft ? '100%' : 210,
+              marginBottom: 18, maxWidth: isLeft ? '100%' : 210, textShadow,
               fontFamily, transition: 'all 0.3s',
             }}>{page.bio}</div>
           )}

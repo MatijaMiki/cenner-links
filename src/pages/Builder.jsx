@@ -47,8 +47,9 @@ export default function Builder() {
   const [emojiIdx, setEmojiIdx]   = useState(0);
   const [userAvatar, setUserAvatar] = useState(null);
   const [avatarPanel, setAvatarPanel] = useState(false);
-  const [avatarUrlInput, setAvatarUrlInput] = useState('');
-  const [toast, showToast]        = useToast();
+  const [uploading, setUploading]   = useState(false);
+  const [toast, showToast]          = useToast();
+  const fileInputRef = useRef(null);
 
   // Debounce ref for profile auto-save
   const saveTimer = useRef(null);
@@ -260,15 +261,60 @@ export default function Builder() {
                   <div style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
                     Profile Image
                   </div>
+
+                  {/* Hidden file input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/avif"
+                    style={{ display: 'none' }}
+                    onChange={async e => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5 MB'); return; }
+                      setUploading(true);
+                      try {
+                        const result = await api.uploadAvatar(file);
+                        updatePage('avatarUrl', result.url);
+                        setAvatarPanel(false);
+                        showToast('✓ Avatar updated');
+                      } catch (err) {
+                        showToast('Upload failed: ' + err.message);
+                      } finally {
+                        setUploading(false);
+                        e.target.value = '';
+                      }
+                    }}
+                  />
+
+                  {/* Upload button */}
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                      width: '100%', padding: '9px 12px', marginBottom: 8,
+                      background: 'rgba(74,222,128,0.06)', border: '1px dashed rgba(74,222,128,0.4)',
+                      borderRadius: 8, cursor: uploading ? 'wait' : 'pointer',
+                      color: 'var(--green)', fontSize: 12, fontWeight: 600,
+                      fontFamily: 'Inter,sans-serif', opacity: uploading ? 0.6 : 1,
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {uploading ? 'Uploading…' : '↑ Upload image (JPG, PNG, WEBP — max 5 MB)'}
+                  </button>
+
+                  {/* Use Cenner profile picture */}
                   {userAvatar && (
                     <button
-                      onClick={() => { updatePage('avatarUrl', userAvatar); setAvatarUrlInput(userAvatar); }}
+                      onClick={() => { updatePage('avatarUrl', userAvatar); setAvatarPanel(false); }}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 8, width: '100%',
                         padding: '7px 10px', marginBottom: 8,
                         background: page.avatarUrl === userAvatar ? 'rgba(74,222,128,0.07)' : 'var(--surface)',
                         border: `1px solid ${page.avatarUrl === userAvatar ? 'var(--green)' : 'var(--border-2)'}`,
-                        borderRadius: 7, cursor: 'pointer', color: page.avatarUrl === userAvatar ? 'var(--green)' : 'var(--text-2)',
+                        borderRadius: 7, cursor: 'pointer',
+                        color: page.avatarUrl === userAvatar ? 'var(--green)' : 'var(--text-2)',
                         fontSize: 12, fontWeight: 500, fontFamily: 'Inter,sans-serif', textAlign: 'left',
                       }}
                     >
@@ -276,35 +322,22 @@ export default function Builder() {
                       Use my Cenner profile picture
                     </button>
                   )}
-                  <div style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 5 }}>
-                    Custom URL
-                  </div>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <input
-                      className="inp" placeholder="https://…"
-                      value={avatarUrlInput}
-                      onChange={e => setAvatarUrlInput(e.target.value)}
-                      style={{ flex: 1 }}
-                    />
-                    <button
-                      className="btn-primary"
-                      onClick={() => { updatePage('avatarUrl', avatarUrlInput); }}
-                      style={{ flexShrink: 0, fontSize: 12, padding: '6px 10px' }}
-                    >Set</button>
-                  </div>
+
+                  {/* Remove */}
                   {page.avatarUrl && (
                     <button
-                      onClick={() => { updatePage('avatarUrl', ''); setAvatarUrlInput(''); }}
+                      onClick={() => { updatePage('avatarUrl', ''); setAvatarPanel(false); }}
                       style={{
-                        marginTop: 8, width: '100%', padding: '5px', background: 'transparent',
+                        width: '100%', padding: '5px', background: 'transparent',
                         border: '1px solid var(--border-2)', borderRadius: 6, color: 'var(--text-3)',
                         fontSize: 11, cursor: 'pointer', fontFamily: 'Inter,sans-serif',
                       }}
                     >Remove image — use emoji</button>
                   )}
+
                   {!userAvatar && (
                     <div style={{ fontSize: 10.5, color: 'var(--text-3)', marginTop: 8, lineHeight: 1.4 }}>
-                      To use your Cenner profile picture, set it at <a href="https://cenner.hr/profile" target="_blank" rel="noreferrer" style={{ color: 'var(--green)' }}>cenner.hr/profile</a>
+                      No profile picture set. Add one at <a href="https://cenner.hr/profile" target="_blank" rel="noreferrer" style={{ color: 'var(--green)' }}>cenner.hr/profile</a>
                     </div>
                   )}
                 </div>

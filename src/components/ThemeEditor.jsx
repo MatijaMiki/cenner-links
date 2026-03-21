@@ -148,6 +148,22 @@ export default function ThemeEditor({ tc, onChange }) {
             <Slider label="Name"  value={cfg.nameSize} min={12} max={28} unit="px" onChange={v => set('nameSize', v)} />
             <Slider label="Bio"   value={cfg.bioSize}  min={9}  max={16} unit="px" onChange={v => set('bioSize', v)} />
           </div>
+
+          <div style={{ marginTop: 4 }}>
+            <Label>Text shadow</Label>
+            <div style={{ display: 'flex', gap: 5 }}>
+              {[{ v: 0, l: 'None' }, { v: 1, l: 'Soft' }, { v: 2, l: 'Medium' }, { v: 3, l: 'Strong' }].map(({ v, l }) => (
+                <button key={v} onClick={() => set('textShadow', v)} style={{
+                  flex: 1, padding: '6px 0', borderRadius: 7, border: '1px solid',
+                  borderColor: cfg.textShadow === v ? 'var(--green)' : 'var(--border-2)',
+                  background: cfg.textShadow === v ? 'rgba(74,222,128,0.07)' : 'var(--surface-2)',
+                  color: cfg.textShadow === v ? 'var(--green)' : 'var(--text-3)',
+                  fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                  fontFamily: 'Inter, sans-serif', transition: 'all 0.15s',
+                }}>{l}</button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 

@@ -21,6 +21,13 @@ function avatarRadius(shape) {
   return '50%';
 }
 
+function getTextShadow(level) {
+  if (level === 1) return '0 1px 8px rgba(0,0,0,0.65)';
+  if (level === 2) return '0 1px 12px rgba(0,0,0,0.85), 0 2px 4px rgba(0,0,0,0.5)';
+  if (level === 3) return '0 1px 20px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,0.95)';
+  return 'none';
+}
+
 export default function PublicPage() {
   const { slug } = useParams();
   const [data, setData]       = useState(null);
@@ -66,6 +73,7 @@ export default function PublicPage() {
   const isLeft = tc.textAlign === 'left';
   const linkBg = tc.accentColor + '14';
   const linkBorder = tc.accentColor + '28';
+  const textShadow = getTextShadow(tc.textShadow || 0);
 
   // Background style
   const bgStyle = tc.bgType === 'image'
@@ -112,18 +120,18 @@ export default function PublicPage() {
           )}
 
           {/* Name */}
-          <div style={{ fontSize: tc.nameSize * 1.4, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4, textAlign: isLeft ? 'left' : 'center', fontFamily, lineHeight: 1.1 }}>
+          <div style={{ fontSize: tc.nameSize * 1.4, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4, textAlign: isLeft ? 'left' : 'center', fontFamily, lineHeight: 1.1, textShadow }}>
             {page.name}
           </div>
 
           {/* Handle */}
-          <div style={{ fontSize: 14, opacity: 0.45, marginBottom: 10, textAlign: isLeft ? 'left' : 'center' }}>
+          <div style={{ fontSize: 14, opacity: 0.45, marginBottom: 10, textAlign: isLeft ? 'left' : 'center', textShadow }}>
             {page.handle}
           </div>
 
           {/* Bio */}
           {page.bio && (
-            <div style={{ fontSize: tc.bioSize * 1.2, textAlign: isLeft ? 'left' : 'center', lineHeight: 1.65, opacity: 0.65, marginBottom: 28, maxWidth: isLeft ? '100%' : 320, fontFamily }}>
+            <div style={{ fontSize: tc.bioSize * 1.2, textAlign: isLeft ? 'left' : 'center', lineHeight: 1.65, opacity: 0.65, marginBottom: 28, maxWidth: isLeft ? '100%' : 320, fontFamily, textShadow }}>
               {page.bio}
             </div>
           )}
