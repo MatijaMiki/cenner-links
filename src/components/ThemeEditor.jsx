@@ -115,6 +115,43 @@ export default function ThemeEditor({ tc, onChange }) {
           {(cfg.bgType === 'image' || cfg.bgType === 'gradient') && (
             <Slider label="Dark overlay" value={cfg.bgOverlay} min={0} max={0.75} step={0.05} onChange={v => set('bgOverlay', v)} />
           )}
+
+          <Label>Content backdrop</Label>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5 }}>
+            {[
+              { v: 'none',  l: 'None',  preview: 'transparent', border: 'var(--border-2)' },
+              { v: 'glass', l: 'Glass', preview: 'rgba(255,255,255,0.12)', blur: true },
+              { v: 'dark',  l: 'Dark',  preview: 'rgba(0,0,0,0.55)' },
+              { v: 'light', l: 'Light', preview: 'rgba(255,255,255,0.14)' },
+            ].map(({ v, l, preview, blur }) => {
+              const sel = (cfg.contentBg || 'none') === v;
+              return (
+                <button key={v} onClick={() => set('contentBg', v)} style={{
+                  display: 'flex', alignItems: 'center', gap: 7,
+                  padding: '7px 10px', borderRadius: 7, border: '1px solid',
+                  borderColor: sel ? 'var(--green)' : 'var(--border-2)',
+                  background: sel ? 'rgba(74,222,128,0.07)' : 'var(--surface-2)',
+                  color: sel ? 'var(--green)' : 'var(--text-2)',
+                  fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                  fontFamily: 'Inter, sans-serif', transition: 'all 0.15s', textAlign: 'left',
+                }}>
+                  <div style={{
+                    width: 20, height: 20, borderRadius: 5, flexShrink: 0,
+                    background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Crect width='10' height='10' fill='%23555'/%3E%3Crect x='10' y='10' width='10' height='10' fill='%23555'/%3E%3Crect x='10' width='10' height='10' fill='%23333'/%3E%3Crect y='10' width='10' height='10' fill='%23333'/%3E%3C/svg%3E")`,
+                    position: 'relative', overflow: 'hidden',
+                    border: '1px solid var(--border-2)',
+                  }}>
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: preview,
+                      backdropFilter: blur ? 'blur(6px)' : undefined,
+                    }} />
+                  </div>
+                  {l}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 

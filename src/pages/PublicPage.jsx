@@ -75,6 +75,14 @@ export default function PublicPage() {
   const linkBorder = tc.accentColor + '28';
   const textShadow = getTextShadow(tc.textShadow || 0);
 
+  const contentBgStyle = (() => {
+    const v = tc.contentBg || 'none';
+    if (v === 'glass') return { background: 'rgba(0,0,0,0.22)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderRadius: 20, padding: '28px 24px' };
+    if (v === 'dark')  return { background: 'rgba(0,0,0,0.55)', borderRadius: 20, padding: '28px 24px' };
+    if (v === 'light') return { background: 'rgba(255,255,255,0.1)', borderRadius: 20, padding: '28px 24px' };
+    return {};
+  })();
+
   // Background style
   const bgStyle = tc.bgType === 'image'
     ? { backgroundImage: `url(${tc.bg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }
@@ -97,6 +105,7 @@ export default function PublicPage() {
           display: 'flex', flexDirection: 'column',
           alignItems: isLeft ? 'flex-start' : 'center',
           padding: `0 ${tc.contentPad - 14}px`,
+          ...contentBgStyle,
         }}>
 
           {/* Avatar */}

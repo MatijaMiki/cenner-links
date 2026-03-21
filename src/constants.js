@@ -61,6 +61,7 @@ export const DEFAULT_THEME_CONFIG = {
   textAlign:    'center',     // 'center' | 'left'
   contentPad:   20,           // px
   textShadow:   0,            // 0=none 1=soft 2=medium 3=strong
+  contentBg:    'none',       // 'none' | 'glass' | 'dark' | 'light'
 };
 
 // ─── Background presets ────────────────────────────────────────────────────────

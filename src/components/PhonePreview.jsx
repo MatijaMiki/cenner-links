@@ -102,6 +102,14 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
   const isLeft = tc.textAlign === 'left';
   const textShadow = getTextShadow(tc.textShadow || 0);
 
+  const contentBgStyle = (() => {
+    const v = tc.contentBg || 'none';
+    if (v === 'glass') return { background: 'rgba(0,0,0,0.22)', backdropFilter: 'blur(22px)', WebkitBackdropFilter: 'blur(22px)' };
+    if (v === 'dark')  return { background: 'rgba(0,0,0,0.55)' };
+    if (v === 'light') return { background: 'rgba(255,255,255,0.11)' };
+    return {};
+  })();
+
   return (
     <div style={{
       width: 300, height: 600, borderRadius: 38,
@@ -139,6 +147,7 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
           color: tc.textColor,
           fontFamily,
           transition: 'all 0.3s',
+          ...contentBgStyle,
         }}>
           {/* Avatar */}
           {page.avatarUrl ? (
