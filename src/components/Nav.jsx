@@ -12,6 +12,11 @@ export default function Nav({ slug, published, onPublish, saving }) {
     navigator.clipboard.writeText(`https://links.cenner.hr/p/${slug}`).catch(() => {});
   }
 
+  function handleLogout() {
+    localStorage.removeItem('portal_token');
+    navigate('/login');
+  }
+
   return (
     <nav style={{
       display: 'flex',
@@ -88,6 +93,20 @@ export default function Nav({ slug, published, onPublish, saving }) {
             links.cenner.hr/p/{slug}
           </button>
         )}
+
+        <button
+          onClick={handleLogout}
+          title="Log out"
+          style={{
+            width: 30, height: 30,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'transparent', border: '1px solid var(--border-2)',
+            borderRadius: 7, cursor: 'pointer', fontSize: 14,
+            color: 'var(--text-3)', transition: 'all 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#F87171'; e.currentTarget.style.color = '#F87171'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-2)'; e.currentTarget.style.color = 'var(--text-3)'; }}
+        >↩</button>
 
         <button
           onClick={onPublish}
