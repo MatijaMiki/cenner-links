@@ -7,6 +7,7 @@ import Toast from '../components/Toast.jsx';
 import ThemeEditor from '../components/ThemeEditor.jsx';
 import { EMOJIS, BLOCK_TYPES, DEFAULT_THEME_CONFIG } from '../constants.js';
 import * as api from '../api.js';
+import Footer from '../components/Footer.jsx';
 
 const DEFAULT_PAGE = {
   slug: '',
@@ -552,6 +553,7 @@ export default function Builder() {
       )}
 
       <Toast message={toast.msg} visible={toast.visible} />
+      <Footer />
     </div>
   );
 }

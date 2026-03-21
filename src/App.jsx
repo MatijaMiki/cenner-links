@@ -1,10 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 import Builder from './pages/Builder.jsx';
 import Analytics from './pages/Analytics.jsx';
 import PublicPage from './pages/PublicPage.jsx';
 import Login from './pages/Login.jsx';
+import Terms from './pages/Terms.jsx';
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
+import CookiePolicy from './pages/CookiePolicy.jsx';
+import CookieBanner, { getConsent } from './components/CookieBanner.jsx';
 
 function SSOHandler() {
   const navigate = useNavigate();
@@ -15,7 +19,6 @@ function SSOHandler() {
     const token = params.get('token');
     if (token) {
       localStorage.setItem('portal_token', token);
-      // Remove token from URL and redirect to builder
       navigate('/', { replace: true });
     }
   }, []);
@@ -30,13 +33,18 @@ function Protected({ children }) {
 }
 
 export default function App() {
+  const [consent, setConsent] = useState(() => getConsent());
+
   return (
     <>
       <BrowserRouter>
         <SSOHandler />
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/p/:slug" element={<PublicPage />} />
+          <Route path="/login"         element={<Login />} />
+          <Route path="/p/:slug"       element={<PublicPage />} />
+          <Route path="/terms"         element={<Terms />} />
+          <Route path="/privacy"       element={<PrivacyPolicy />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
           <Route
             path="/"
             element={
@@ -55,8 +63,12 @@ export default function App() {
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+
+        <CookieBanner onConsentChange={setConsent} />
       </BrowserRouter>
-      <VercelAnalytics />
+
+      {/* Only inject Vercel Analytics script after explicit consent */}
+      {consent === 'all' && <VercelAnalytics />}
     </>
   );
 }

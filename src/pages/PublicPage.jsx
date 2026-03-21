@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SocialIcon from '../components/SocialIcon.jsx';
+import Footer from '../components/Footer.jsx';
 import { SOCIAL_META, FONT_OPTIONS, DEFAULT_THEME_CONFIG } from '../constants.js';
 import * as api from '../api.js';
 
@@ -268,6 +269,7 @@ export default function PublicPage() {
           </div>
         </div>
       </div>
+      <Footer dark={true} />
     </div>
   );
 }
