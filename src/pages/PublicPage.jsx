@@ -77,9 +77,11 @@ export default function PublicPage() {
 
   const contentBgStyle = (() => {
     const v = tc.contentBg || 'none';
-    if (v === 'glass') return { background: 'rgba(0,0,0,0.22)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderRadius: 20, padding: '28px 24px' };
-    if (v === 'dark')  return { background: 'rgba(0,0,0,0.55)', borderRadius: 20, padding: '28px 24px' };
-    if (v === 'light') return { background: 'rgba(255,255,255,0.1)', borderRadius: 20, padding: '28px 24px' };
+    const s = tc.contentBgStrength ?? 0.5;
+    const card = { borderRadius: 20, padding: '28px 24px' };
+    if (v === 'glass') return { ...card, background: `rgba(0,0,0,${(s * 0.55).toFixed(2)})`, backdropFilter: `blur(${Math.round(s * 28)}px)`, WebkitBackdropFilter: `blur(${Math.round(s * 28)}px)` };
+    if (v === 'dark')  return { ...card, background: `rgba(0,0,0,${(s * 0.85).toFixed(2)})` };
+    if (v === 'light') return { ...card, background: `rgba(255,255,255,${(s * 0.22).toFixed(2)})` };
     return {};
   })();
 
@@ -145,13 +147,13 @@ export default function PublicPage() {
           </div>
 
           {/* Handle */}
-          <div style={{ fontSize: 14, opacity: 0.45, marginBottom: 10, textAlign: isLeft ? 'left' : 'center', textShadow }}>
+          <div style={{ fontSize: 14, opacity: (tc.textOpacity ?? 0.65) * 0.7, marginBottom: 10, textAlign: isLeft ? 'left' : 'center', textShadow }}>
             {page.handle}
           </div>
 
           {/* Bio */}
           {page.bio && (
-            <div style={{ fontSize: tc.bioSize * 1.2, textAlign: isLeft ? 'left' : 'center', lineHeight: 1.65, opacity: 0.65, marginBottom: 28, maxWidth: isLeft ? '100%' : 320, fontFamily, textShadow }}>
+            <div style={{ fontSize: tc.bioSize * 1.2, textAlign: isLeft ? 'left' : 'center', lineHeight: 1.65, opacity: tc.textOpacity ?? 0.65, marginBottom: 28, maxWidth: isLeft ? '100%' : 320, fontFamily, textShadow }}>
               {page.bio}
             </div>
           )}
@@ -214,13 +216,13 @@ export default function PublicPage() {
               }
 
               if (b.type === 'text') return (
-                <div key={b.id} style={{ fontSize: 13, lineHeight: 1.65, opacity: 0.55, textAlign: isLeft ? 'left' : 'center', padding: '4px', fontFamily }}>
-                  {b.title}
+                <div key={b.id} style={{ fontSize: 13, lineHeight: 1.65, opacity: tc.textOpacity ?? 0.65, textAlign: isLeft ? 'left' : 'center', padding: '4px', fontFamily }}>
+    {b.title}
                 </div>
               );
 
               if (b.type === 'header') return (
-                <div key={b.id} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.35, textAlign: isLeft ? 'left' : 'center', paddingTop: 10 }}>
+                <div key={b.id} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', opacity: (tc.textOpacity ?? 0.65) * 0.55, textAlign: isLeft ? 'left' : 'center', paddingTop: 10 }}>
                   {b.title}
                 </div>
               );

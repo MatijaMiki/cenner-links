@@ -116,6 +116,10 @@ export default function ThemeEditor({ tc, onChange }) {
             <Slider label="Dark overlay" value={cfg.bgOverlay} min={0} max={0.75} step={0.05} onChange={v => set('bgOverlay', v)} />
           )}
 
+          {(cfg.contentBg || 'none') !== 'none' && (
+            <Slider label="Backdrop strength" value={cfg.contentBgStrength ?? 0.5} min={0.05} max={1} step={0.05} onChange={v => set('contentBgStrength', v)} />
+          )}
+
           <Label>Content backdrop</Label>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5 }}>
             {[
@@ -179,6 +183,8 @@ export default function ThemeEditor({ tc, onChange }) {
           <ColorRow label="Accent"    value={cfg.accentColor} onChange={v => set('accentColor', v)} />
           <ColorRow label="Text"      value={cfg.textColor}   onChange={v => set('textColor', v)} />
           <ColorRow label="Link fill" value={cfg.linkText}    onChange={v => set('linkText', v)} />
+
+          <Slider label="Secondary text opacity" value={Math.round((cfg.textOpacity ?? 0.65) * 100)} min={20} max={100} unit="%" onChange={v => set('textOpacity', v / 100)} />
 
           <div style={{ marginTop: 4 }}>
             <Label>Text sizes</Label>

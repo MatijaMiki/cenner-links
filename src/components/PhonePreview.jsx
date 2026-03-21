@@ -104,9 +104,10 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
 
   const contentBgStyle = (() => {
     const v = tc.contentBg || 'none';
-    if (v === 'glass') return { background: 'rgba(0,0,0,0.22)', backdropFilter: 'blur(22px)', WebkitBackdropFilter: 'blur(22px)' };
-    if (v === 'dark')  return { background: 'rgba(0,0,0,0.55)' };
-    if (v === 'light') return { background: 'rgba(255,255,255,0.11)' };
+    const s = tc.contentBgStrength ?? 0.5;
+    if (v === 'glass') return { background: `rgba(0,0,0,${(s * 0.55).toFixed(2)})`, backdropFilter: `blur(${Math.round(s * 28)}px)`, WebkitBackdropFilter: `blur(${Math.round(s * 28)}px)` };
+    if (v === 'dark')  return { background: `rgba(0,0,0,${(s * 0.85).toFixed(2)})` };
+    if (v === 'light') return { background: `rgba(255,255,255,${(s * 0.22).toFixed(2)})` };
     return {};
   })();
 
@@ -193,7 +194,7 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
 
           {/* Handle */}
           <div style={{
-            fontSize: 11, opacity: 0.45, marginBottom: 7,
+            fontSize: 11, opacity: (tc.textOpacity ?? 0.65) * 0.7, marginBottom: 7,
             textAlign: isLeft ? 'left' : 'center', textShadow,
           }}>{page.handle}</div>
 
@@ -201,7 +202,7 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
           {page.bio && (
             <div style={{
               fontSize: tc.bioSize, textAlign: isLeft ? 'left' : 'center',
-              lineHeight: 1.55, opacity: 0.6,
+              lineHeight: 1.55, opacity: tc.textOpacity ?? 0.65,
               marginBottom: 18, maxWidth: isLeft ? '100%' : 210, textShadow,
               fontFamily, transition: 'all 0.3s',
             }}>{page.bio}</div>
@@ -214,12 +215,12 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
               if (b.type === 'social') return <BioSocial key={b.id} block={b} tc={tc} />;
               if (b.type === 'cta')    return <BioCta    key={b.id} block={b} tc={tc} />;
               if (b.type === 'text')   return (
-                <div key={b.id} style={{ fontSize: 11, lineHeight: 1.6, opacity: 0.5, textAlign: isLeft ? 'left' : 'center', padding: '2px 4px', fontFamily }}>
+                <div key={b.id} style={{ fontSize: 11, lineHeight: 1.6, opacity: tc.textOpacity ?? 0.65, textAlign: isLeft ? 'left' : 'center', padding: '2px 4px', fontFamily }}>
                   {b.title}
                 </div>
               );
               if (b.type === 'header') return (
-                <div key={b.id} style={{ fontSize: 9.5, fontWeight: 650, letterSpacing: '0.09em', textTransform: 'uppercase', opacity: 0.35, textAlign: isLeft ? 'left' : 'center', padding: '6px 2px 0' }}>
+                <div key={b.id} style={{ fontSize: 9.5, fontWeight: 650, letterSpacing: '0.09em', textTransform: 'uppercase', opacity: (tc.textOpacity ?? 0.65) * 0.55, textAlign: isLeft ? 'left' : 'center', padding: '6px 2px 0' }}>
                   {b.title}
                 </div>
               );

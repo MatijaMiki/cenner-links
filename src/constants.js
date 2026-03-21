@@ -61,7 +61,9 @@ export const DEFAULT_THEME_CONFIG = {
   textAlign:    'center',     // 'center' | 'left'
   contentPad:   20,           // px
   textShadow:   0,            // 0=none 1=soft 2=medium 3=strong
-  contentBg:    'none',       // 'none' | 'glass' | 'dark' | 'light'
+  contentBg:       'none',    // 'none' | 'glass' | 'dark' | 'light'
+  contentBgStrength: 0.5,    // 0–1 backdrop intensity
+  textOpacity:     0.65,     // 0.2–1 secondary text opacity (handle, bio)
 };
 
 // ─── Background presets ────────────────────────────────────────────────────────
