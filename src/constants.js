@@ -79,18 +79,12 @@ export const BG_PRESETS = [
   { id: 'g-space',  label: 'Space',   bg: 'linear-gradient(135deg,#020111 0%,#3a1c71 50%,#d76d77 100%)', bgType: 'gradient' },
   { id: 'g-grove',  label: 'Grove',   bg: 'linear-gradient(135deg,#0a1a0a 0%,#1a3a1a 60%,#2d5a2d 100%)', bgType: 'gradient' },
   // Photos
-  { id: 'galaxy',   label: 'Galaxy',   bg: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'aurora',   label: 'Aurora',   bg: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'fog-mtn',  label: 'Peaks',    bg: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'stars-mtn',label: 'Starry',   bg: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'tokyo',    label: 'Tokyo',    bg: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'neon-rain',label: 'Neon',     bg: 'https://images.unsplash.com/photo-1493514789931-586cb221d7a7?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'ocean',    label: 'Ocean',    bg: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'marble',   label: 'Marble',   bg: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'bokeh',    label: 'Bokeh',    bg: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'forest',   label: 'Forest',   bg: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'desert',   label: 'Desert',   bg: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
-  { id: 'smog-city',label: 'Smog',     bg: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=85&auto=format&fit=crop', bgType: 'image' },
+  { id: 'drift',  label: 'Drift',  bg: '/backgrounds/bg-drift.jpg',  bgType: 'image' },
+  { id: 'prism',  label: 'Prism',  bg: '/backgrounds/bg-prism.jpg',  bgType: 'image' },
+  { id: 'flow',   label: 'Flow',   bg: '/backgrounds/bg-flow.jpg',   bgType: 'image' },
+  { id: 'dusk',   label: 'Dusk',   bg: '/backgrounds/bg-dusk.jpg',   bgType: 'image' },
+  { id: 'ink',    label: 'Ink',    bg: '/backgrounds/bg-ink.jpg',    bgType: 'image' },
+  { id: 'splash', label: 'Splash', bg: '/backgrounds/bg-splash.jpg', bgType: 'image' },
 ];
 
 // ─── Font options ──────────────────────────────────────────────────────────────
