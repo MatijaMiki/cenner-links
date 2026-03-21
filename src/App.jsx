@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 import Builder from './pages/Builder.jsx';
 import Analytics from './pages/Analytics.jsx';
 import PublicPage from './pages/PublicPage.jsx';
@@ -30,29 +31,32 @@ function Protected({ children }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <SSOHandler />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/p/:slug" element={<PublicPage />} />
-        <Route
-          path="/"
-          element={
-            <Protected>
-              <Builder />
-            </Protected>
-          }
-        />
-        <Route
-          path="/analytics"
-          element={
-            <Protected>
-              <Analytics />
-            </Protected>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <SSOHandler />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/p/:slug" element={<PublicPage />} />
+          <Route
+            path="/"
+            element={
+              <Protected>
+                <Builder />
+              </Protected>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <Protected>
+                <Analytics />
+              </Protected>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+      <VercelAnalytics />
+    </>
   );
 }
