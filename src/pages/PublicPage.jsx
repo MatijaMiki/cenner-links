@@ -92,14 +92,24 @@ export default function PublicPage() {
         }}>
 
           {/* Avatar */}
-          <div style={{
-            width: tc.avatarSize * 1.2, height: tc.avatarSize * 1.2,
-            borderRadius: avatarRadius(tc.avatarShape),
-            background: `linear-gradient(135deg,${tc.accentColor},#F472B6)`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: Math.round(tc.avatarSize * 0.5),
-            marginBottom: 16, flexShrink: 0,
-          }}>{page.emoji || '🎨'}</div>
+          {page.avatarUrl ? (
+            <img src={page.avatarUrl} alt=""
+              style={{
+                width: tc.avatarSize * 1.2, height: tc.avatarSize * 1.2,
+                borderRadius: avatarRadius(tc.avatarShape),
+                objectFit: 'cover', marginBottom: 16, flexShrink: 0,
+              }}
+            />
+          ) : (
+            <div style={{
+              width: tc.avatarSize * 1.2, height: tc.avatarSize * 1.2,
+              borderRadius: avatarRadius(tc.avatarShape),
+              background: `linear-gradient(135deg,${tc.accentColor},#F472B6)`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: Math.round(tc.avatarSize * 0.5),
+              marginBottom: 16, flexShrink: 0,
+            }}>{page.emoji || '🎨'}</div>
+          )}
 
           {/* Name */}
           <div style={{ fontSize: tc.nameSize * 1.4, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4, textAlign: isLeft ? 'left' : 'center', fontFamily, lineHeight: 1.1 }}>
@@ -192,9 +202,15 @@ export default function PublicPage() {
           </div>
 
           {/* Footer */}
-          <div style={{ marginTop: 48, display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, opacity: 0.25, alignSelf: isLeft ? 'flex-start' : 'center' }}>
-            <div style={{ width: 14, height: 14, background: 'linear-gradient(135deg,#4ADE80,#F472B6)', borderRadius: 4 }} />
-            <span style={{ fontFamily: 'Inter,sans-serif', letterSpacing: '0.02em' }}>Powered by Cenner</span>
+          <div style={{ marginTop: 48, display: 'flex', alignItems: 'center', gap: 8, opacity: 0.3, alignSelf: isLeft ? 'flex-start' : 'center' }}>
+            <div style={{
+              width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+              background: 'linear-gradient(135deg,#4ADE80,#22C55E)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{ fontSize: 14, fontWeight: 900, color: '#000', lineHeight: 1, letterSpacing: '-0.05em' }}>C</span>
+            </div>
+            <span style={{ fontFamily: 'Inter,sans-serif', fontSize: 13, fontWeight: 600, letterSpacing: '0.02em' }}>Powered by Cenner</span>
           </div>
         </div>
       </div>

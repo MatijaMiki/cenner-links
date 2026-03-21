@@ -45,6 +45,9 @@ export default function Builder() {
   const [saving, setSaving]       = useState(false);
   const [editingBlock, setEditingBlock] = useState(null);
   const [emojiIdx, setEmojiIdx]   = useState(0);
+  const [userAvatar, setUserAvatar] = useState(null);
+  const [avatarPanel, setAvatarPanel] = useState(false);
+  const [avatarUrlInput, setAvatarUrlInput] = useState('');
   const [toast, showToast]        = useToast();
 
   // Debounce ref for profile auto-save
@@ -57,8 +60,10 @@ export default function Builder() {
         setPage(data.page || DEFAULT_PAGE);
         setBlocks((data.blocks || []).sort((a, b) => a.order - b.order));
         if (data.page?.themeConfig) setThemeConfig({ ...DEFAULT_THEME_CONFIG, ...data.page.themeConfig });
-        if (data.tier)  setTier(data.tier);
-        if (data.limit) setLimit(data.limit);
+        if (data.tier)      setTier(data.tier);
+        if (data.limit)     setLimit(data.limit);
+        if (data.userAvatar) setUserAvatar(data.userAvatar);
+        if (data.page?.avatarUrl) setAvatarUrlInput(data.page.avatarUrl);
       })
       .catch(() => { /* no page yet – stay at defaults */ })
       .finally(() => setLoading(false));
@@ -82,7 +87,12 @@ export default function Builder() {
 
   function handleThemeChange(newTc) {
     setThemeConfig(newTc);
-    saveProfile({ ...page, themeConfig: newTc });
+    // Send only themeConfig — avoids slug validation failing for new accounts
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      try { await api.upsertPage({ themeConfig: newTc }); }
+      catch (e) { showToast('Could not save theme — set a URL slug first'); }
+    }, 800);
   }
 
   // ─── Publish ───────────────────────────────────────────────────────────────
@@ -203,19 +213,32 @@ export default function Builder() {
               <div className="panel-label">Profile</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                 {/* Avatar */}
-                <div
-                  onClick={cycleEmoji}
-                  title="Click to change"
-                  style={{
-                    width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
-                    background: 'linear-gradient(135deg,rgba(74,222,128,0.15),rgba(244,114,182,0.15))',
-                    border: '1.5px dashed var(--border-2)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 24, cursor: 'pointer', transition: 'all 0.15s', userSelect: 'none',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--green)'}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-2)'}
-                >{page.emoji}</div>
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  <div
+                    onClick={() => setAvatarPanel(v => !v)}
+                    title="Change avatar"
+                    style={{
+                      width: 52, height: 52, borderRadius: '50%',
+                      border: '1.5px dashed var(--border-2)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', transition: 'all 0.15s', userSelect: 'none', overflow: 'hidden',
+                      background: page.avatarUrl ? 'transparent' : 'linear-gradient(135deg,rgba(74,222,128,0.15),rgba(244,114,182,0.15))',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--green)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-2)'}
+                  >
+                    {page.avatarUrl
+                      ? <img src={page.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <span style={{ fontSize: 24 }}>{page.emoji}</span>
+                    }
+                  </div>
+                  <div style={{
+                    position: 'absolute', bottom: 0, right: 0,
+                    width: 16, height: 16, borderRadius: '50%', background: 'var(--surface-3)',
+                    border: '1px solid var(--border-2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 9, pointerEvents: 'none',
+                  }}>✏️</div>
+                </div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <input className="inp" placeholder="Display name" value={page.name}
                     onChange={e => handleNameChange(e.target.value)} />
@@ -227,6 +250,66 @@ export default function Builder() {
                 <textarea className="inp" rows={2} placeholder="Short bio…" value={page.bio || ''}
                   onChange={e => updatePage('bio', e.target.value)} />
               </div>
+
+              {/* Avatar panel */}
+              {avatarPanel && (
+                <div style={{
+                  background: 'var(--surface-2)', border: '1px solid var(--border-2)',
+                  borderRadius: 10, padding: 12, marginBottom: 10,
+                }}>
+                  <div style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
+                    Profile Image
+                  </div>
+                  {userAvatar && (
+                    <button
+                      onClick={() => { updatePage('avatarUrl', userAvatar); setAvatarUrlInput(userAvatar); }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                        padding: '7px 10px', marginBottom: 8,
+                        background: page.avatarUrl === userAvatar ? 'rgba(74,222,128,0.07)' : 'var(--surface)',
+                        border: `1px solid ${page.avatarUrl === userAvatar ? 'var(--green)' : 'var(--border-2)'}`,
+                        borderRadius: 7, cursor: 'pointer', color: page.avatarUrl === userAvatar ? 'var(--green)' : 'var(--text-2)',
+                        fontSize: 12, fontWeight: 500, fontFamily: 'Inter,sans-serif', textAlign: 'left',
+                      }}
+                    >
+                      <img src={userAvatar} alt="" style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                      Use my Cenner profile picture
+                    </button>
+                  )}
+                  <div style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--text-3)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 5 }}>
+                    Custom URL
+                  </div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <input
+                      className="inp" placeholder="https://…"
+                      value={avatarUrlInput}
+                      onChange={e => setAvatarUrlInput(e.target.value)}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      className="btn-primary"
+                      onClick={() => { updatePage('avatarUrl', avatarUrlInput); }}
+                      style={{ flexShrink: 0, fontSize: 12, padding: '6px 10px' }}
+                    >Set</button>
+                  </div>
+                  {page.avatarUrl && (
+                    <button
+                      onClick={() => { updatePage('avatarUrl', ''); setAvatarUrlInput(''); }}
+                      style={{
+                        marginTop: 8, width: '100%', padding: '5px', background: 'transparent',
+                        border: '1px solid var(--border-2)', borderRadius: 6, color: 'var(--text-3)',
+                        fontSize: 11, cursor: 'pointer', fontFamily: 'Inter,sans-serif',
+                      }}
+                    >Remove image — use emoji</button>
+                  )}
+                  {!userAvatar && (
+                    <div style={{ fontSize: 10.5, color: 'var(--text-3)', marginTop: 8, lineHeight: 1.4 }}>
+                      To use your Cenner profile picture, set it at <a href="https://cenner.hr/profile" target="_blank" rel="noreferrer" style={{ color: 'var(--green)' }}>cenner.hr/profile</a>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div style={{ display: 'flex', gap: 6 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 4, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>URL slug</div>

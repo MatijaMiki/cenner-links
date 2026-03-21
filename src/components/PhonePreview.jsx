@@ -133,15 +133,26 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
           transition: 'all 0.3s',
         }}>
           {/* Avatar */}
-          <div style={{
-            width: tc.avatarSize, height: tc.avatarSize,
-            borderRadius: avatarRadius(tc.avatarShape),
-            background: `linear-gradient(135deg,${tc.accentColor},#F472B6)`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: Math.round(tc.avatarSize * 0.42),
-            marginBottom: 10, flexShrink: 0,
-            transition: 'all 0.3s',
-          }}>{page.emoji || '🎨'}</div>
+          {page.avatarUrl ? (
+            <img src={page.avatarUrl} alt=""
+              style={{
+                width: tc.avatarSize, height: tc.avatarSize,
+                borderRadius: avatarRadius(tc.avatarShape),
+                objectFit: 'cover', marginBottom: 10, flexShrink: 0,
+                transition: 'all 0.3s',
+              }}
+            />
+          ) : (
+            <div style={{
+              width: tc.avatarSize, height: tc.avatarSize,
+              borderRadius: avatarRadius(tc.avatarShape),
+              background: `linear-gradient(135deg,${tc.accentColor},#F472B6)`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: Math.round(tc.avatarSize * 0.42),
+              marginBottom: 10, flexShrink: 0,
+              transition: 'all 0.3s',
+            }}>{page.emoji || '🎨'}</div>
+          )}
 
           {/* Name */}
           <div style={{
@@ -187,9 +198,15 @@ export default function PhonePreview({ page, blocks, onTrackEvent }) {
           </div>
 
           {/* Footer */}
-          <div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 5, fontSize: 9.5, opacity: 0.25, flexShrink: 0, alignSelf: isLeft ? 'flex-start' : 'center' }}>
-            <div style={{ width: 11, height: 11, background: 'linear-gradient(135deg,#4ADE80,#F472B6)', borderRadius: 3 }} />
-            <span>Powered by Cenner</span>
+          <div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 5, opacity: 0.3, flexShrink: 0, alignSelf: isLeft ? 'flex-start' : 'center' }}>
+            <div style={{
+              width: 17, height: 17, borderRadius: 5, flexShrink: 0,
+              background: 'linear-gradient(135deg,#4ADE80,#22C55E)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{ fontSize: 11, fontWeight: 900, color: '#000', lineHeight: 1, letterSpacing: '-0.05em' }}>C</span>
+            </div>
+            <span style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: '0.02em' }}>Powered by Cenner</span>
           </div>
         </div>
       </div>
