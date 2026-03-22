@@ -14,7 +14,7 @@ export default function Nav({ slug, published, onPublish, saving }) {
   }
 
   function handleLogout() {
-    localStorage.removeItem('portal_token');
+    localStorage.removeItem('cenner_token');
     navigate('/login');
   }
 

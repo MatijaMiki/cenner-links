@@ -1,7 +1,7 @@
 import { API_BASE } from './constants.js';
 
 function getToken() {
-  return localStorage.getItem('portal_token');
+  return localStorage.getItem('cenner_token');
 }
 
 async function req(method, path, body) {

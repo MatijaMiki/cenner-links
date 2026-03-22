@@ -20,7 +20,7 @@ function SSOHandler() {
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
     if (token) {
-      localStorage.setItem('portal_token', token);
+      localStorage.setItem('cenner_token', token);
       navigate('/', { replace: true });
     }
   }, []);
@@ -37,7 +37,7 @@ function PricingWrapper() {
 }
 
 function Protected({ children }) {
-  const token = localStorage.getItem('portal_token');
+  const token = localStorage.getItem('cenner_token');
   if (!token) return <Navigate to="/login" replace />;
   return children;
 }
