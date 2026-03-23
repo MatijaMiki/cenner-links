@@ -2,12 +2,24 @@ export const config = { matcher: ['/p/:slug*'] };
 
 const BOT_UA = /bot|crawl|spider|slack|discord|telegram|twitter|facebook|whatsapp|linkedinbot|preview|wget|curl|facebookexternalhit|twitterbot|rogerbot|embedly|quora|outbrain|w3c_validator/i;
 
+/** Escape user-supplied strings before interpolating into HTML */
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 export default async function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
   if (!BOT_UA.test(ua)) return; // let humans through to the SPA
 
   const url = new URL(request.url);
-  const slug = url.pathname.replace('/p/', '').replace(/^\//, '');
+  // Only allow safe slug characters — prevents any injection via path
+  const rawSlug = url.pathname.replace('/p/', '').replace(/^\//, '');
+  const slug = rawSlug.replace(/[^a-zA-Z0-9_-]/g, '');
   if (!slug) return;
 
   try {
@@ -17,8 +29,9 @@ export default async function middleware(request) {
     const page = data.page;
     if (!page) return;
 
-    const title = `${page.name} | Cenner Links`;
-    const desc  = page.bio || `${page.handle} — check out my links`;
+    const title = `${esc(page.name)} | Cenner Links`;
+    const desc  = esc(page.bio || `${page.handle} — check out my links`);
+    // pageUrl is constructed from a sanitised slug — safe to use as-is
     const pageUrl = `https://links.cenner.hr/p/${slug}`;
     const img   = `https://api.cenner.hr/api/v1/links/p/${slug}/og`;
 

@@ -28,7 +28,7 @@ function avatarRadius(shape) {
 function BioLink({ block, tc, onTrack }) {
   const linkBg = tc.accentColor + '14'; // ~8% opacity tint of accent
   return (
-    <a href={block.url || '#'} target="_blank" rel="noreferrer"
+    <a href={/^https?:\/\//i.test(block.url) ? block.url : '#'} target="_blank" rel="noreferrer"
       onClick={() => onTrack && onTrack(block.id, 'click')}
       style={{
         display: 'flex', alignItems: 'center', gap: 9,

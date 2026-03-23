@@ -163,7 +163,7 @@ export default function PublicPage() {
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: tc.linkSpacing + 2 }}>
             {activeBlocks.map(b => {
               if (b.type === 'link') return (
-                <a key={b.id} href={b.url} target="_blank" rel="noreferrer"
+                <a key={b.id} href={/^https?:\/\//i.test(b.url) ? b.url : '#'} target="_blank" rel="noreferrer"
                   onClick={() => handleTrack(b.id, 'click')}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12,
